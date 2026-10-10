@@ -505,7 +505,7 @@ namespace video {
         { "forced_idr"s, 1 },
         { "async_depth"s, 1 },
         { "low_delay_brc"s, 1 },
-        { "low_power"s, 1 },
+        { "low_power"s, 0 },  // Ivy Bridge HD Graphics has no low power encode entrypoints
         { "recovery_point_sei"s, 0 },
         { "pic_timing_sei"s, 0 },
       },
@@ -528,9 +528,10 @@ namespace video {
         { "forced_idr"s, 1 },
         { "async_depth"s, 1 },
         { "low_delay_brc"s, 1 },
-        { "low_power"s, 1 },
+        { "low_power"s, 0 },  // Ivy Bridge HD Graphics has no low power encode entrypoints
         { "recovery_point_sei"s, 0 },
-        { "vcm"s, 1 },
+        // No "vcm": MFX_RATECONTROL_VCM is rejected by this driver
+        // ("Selected ratecontrol mode is unsupported"). Omitting it falls back to ICQ.
         { "pic_timing_sei"s, 0 },
         { "max_dec_frame_buffering"s, 1 },
       },
