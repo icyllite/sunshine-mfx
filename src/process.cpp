@@ -35,7 +35,7 @@
 
 namespace proc {
   using namespace std::literals;
-  namespace bp = boost::process;
+  namespace bp = SUNSHINE_BOOST_PROCESS;
   namespace pt = boost::property_tree;
 
   proc_t proc;
@@ -87,7 +87,7 @@ namespace proc {
     // If the cmd path is not an absolute path, resolve it using our PATH variable
     boost::filesystem::path cmd_path(parts.at(0));
     if (!cmd_path.is_absolute()) {
-      cmd_path = boost::process::search_path(parts.at(0));
+      cmd_path = bp::search_path(parts.at(0));
       if (cmd_path.empty()) {
         BOOST_LOG(error) << "Unable to find executable ["sv << parts.at(0) << "]. Is it in your PATH?"sv;
         return boost::filesystem::path();

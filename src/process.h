@@ -11,11 +11,16 @@
 #include <optional>
 #include <unordered_map>
 
-#include <boost/process.hpp>
-
 #include "config.h"
 #include "platform/common.h"
 #include "utility.h"
+
+// platform/common.h determines which Boost.Process namespace this build must target.
+#if SUNSHINE_BOOST_PROCESS_V1_NESTED
+  #include <boost/process/v1.hpp>
+#else
+  #include <boost/process.hpp>
+#endif
 
 namespace proc {
   using file_t = util::safe_ptr_v2<FILE, int, fclose>;
@@ -58,7 +63,7 @@ namespace proc {
     KITTY_DEFAULT_CONSTR_MOVE_THROW(proc_t)
 
     proc_t(
-      boost::process::environment &&env,
+      SUNSHINE_BOOST_PROCESS::environment &&env,
       std::vector<ctx_t> &&apps):
         _app_id(0),
         _env(std::move(env)),
@@ -88,15 +93,15 @@ namespace proc {
   private:
     int _app_id;
 
-    boost::process::environment _env;
+    SUNSHINE_BOOST_PROCESS::environment _env;
     std::vector<ctx_t> _apps;
     ctx_t _app;
 
     // If no command associated with _app_id, yet it's still running
     bool placebo {};
 
-    boost::process::child _process;
-    boost::process::group _process_handle;
+    SUNSHINE_BOOST_PROCESS::child _process;
+    SUNSHINE_BOOST_PROCESS::group _process_handle;
 
     file_t _pipe;
     std::vector<cmd_t>::const_iterator _app_prep_it;

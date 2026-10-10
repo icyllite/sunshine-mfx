@@ -6,10 +6,13 @@
 #include <codecvt>
 #include <initguid.h>
 
-#include <boost/process.hpp>
-
-// We have to include boost/process.hpp before display.h due to WinSock.h,
+// We have to include boost/process before display.h due to WinSock.h,
 // but that prevents the definition of NTSTATUS so we must define it ourself.
+#if __has_include(<boost/process/v1.hpp>)
+  #include <boost/process/v1.hpp>
+#else
+  #include <boost/process.hpp>
+#endif
 typedef long NTSTATUS;
 
 #include "display.h"
@@ -23,7 +26,7 @@ namespace platf {
   using namespace std::literals;
 }
 namespace platf::dxgi {
-  namespace bp = boost::process;
+  namespace bp = SUNSHINE_BOOST_PROCESS;
 
   capture_e
   duplication_t::next_frame(DXGI_OUTDUPL_FRAME_INFO &frame_info, std::chrono::milliseconds timeout, resource_t::pointer *res_p) {

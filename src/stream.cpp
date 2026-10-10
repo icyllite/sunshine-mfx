@@ -10,6 +10,7 @@
 #include <fstream>
 #include <openssl/err.h>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/endian/arithmetic.hpp>
 
 extern "C" {
@@ -292,7 +293,7 @@ namespace stream {
     std::thread audio_thread;
     std::thread control_thread;
 
-    asio::io_service io;
+    asio::io_context io;
 
     udp::socket video_sock { io };
     udp::socket audio_sock { io };

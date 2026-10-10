@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.18)
 # `CMAKE_CUDA_ARCHITECTURES` requires 3.18
 
+# Several vendored dependencies still declare `cmake_minimum_required` versions older than 3.5,
+# which CMake 4.x refuses outright. Lower the policy floor here, before any `add_subdirectory` call,
+# rather than patching submodule sources that would be reverted on the next submodule update.
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5 CACHE STRING "Oldest policy version accepted from vendored dependencies")
+
 # todo - set version to 0.0.0 once confident in automated versioning
 project(Sunshine VERSION 0.20.0
         DESCRIPTION "Sunshine is a self-hosted game stream host for Moonlight."

@@ -10,7 +10,11 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/asio/ip/address.hpp>
-#include <boost/process.hpp>
+#if __has_include(<boost/process/v1.hpp>)
+  #include <boost/process/v1.hpp>
+#else
+  #include <boost/process.hpp>
+#endif
 
 // prevent clang format from "optimizing" the header include order
 // clang-format off
@@ -38,16 +42,20 @@
   #define UDP_SEND_MSG_SIZE 2
 #endif
 
-// MinGW headers are missing qWAVE stuff
+// Older MinGW headers were missing the qWAVE types. Modern mingw-w64 supplies them from
+// <qos2.h>, but only behind its own `_WIN32_WINNT >= 0x0600` gate -- so mirror that condition.
+// Redefining them unconditionally collides with the `ULONG`-based typedefs in that header.
+#if !defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0600
 typedef UINT32 QOS_FLOWID, *PQOS_FLOWID;
 #define QOS_NON_ADAPTIVE_FLOW 0x00000002
+#endif
 #include <qos2.h>
 
 #ifndef WLAN_API_MAKE_VERSION
   #define WLAN_API_MAKE_VERSION(_major, _minor) (((DWORD) (_minor)) << 16 | (_major))
 #endif
 
-namespace bp = boost::process;
+namespace bp = SUNSHINE_BOOST_PROCESS;
 
 using namespace std::literals;
 namespace platf {
@@ -657,7 +665,7 @@ namespace platf {
     // set working dir to Windows system directory
     auto working_dir = boost::filesystem::path(std::getenv("SystemRoot"));
 
-    boost::process::environment _env = boost::this_process::environment();
+    bp::environment _env = boost::this_process::environment();
     std::error_code ec;
 
     // Launch this as a non-interactive non-elevated command to avoid an extra console window

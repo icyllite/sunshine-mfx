@@ -29,9 +29,10 @@ using namespace std::literals;
 #define SV(quote) __SV(quote)
 
 extern "C" {
-constexpr auto DNS_REQUEST_PENDING = 9506L;
-
 #ifndef __MINGW32__
+// mingw-w64's winerror.h already provides these as macros, so defining them here would
+// expand the declaration name into a numeric literal.
+constexpr auto DNS_REQUEST_PENDING = 9506L;
 constexpr auto DNS_QUERY_REQUEST_VERSION1 = 0x1;
 constexpr auto DNS_QUERY_RESULTS_VERSION1 = 0x1;
 #endif

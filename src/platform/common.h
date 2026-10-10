@@ -23,6 +23,18 @@ struct AVFrame;
 struct AVBufferRef;
 struct AVHWFramesContext;
 
+// Boost.Process v1 -- the API Sunshine uses -- lived directly in `boost::process` up to Boost
+// 1.86. From Boost 1.87 on, `boost/process.hpp` serves the v2 API instead and v1 was moved into
+// a nested `v1` namespace (still shipped, still inline-free). Detect which layout we have so the
+// forward declarations below land in the right namespace on either Boost.
+#if __has_include(<boost/process/v1.hpp>)
+  #define SUNSHINE_BOOST_PROCESS_V1_NESTED 1
+  #define SUNSHINE_BOOST_PROCESS boost::process::v1
+#else
+  #define SUNSHINE_BOOST_PROCESS_V1_NESTED 0
+  #define SUNSHINE_BOOST_PROCESS boost::process
+#endif
+
 // Forward declarations of boost classes to avoid having to include boost headers
 // here, which results in issues with Windows.h and WinSock2.h include order.
 namespace boost {
@@ -35,11 +47,17 @@ namespace boost {
     class path;
   }
   namespace process {
-    class child;
-    class group;
-    template <typename Char>
-    class basic_environment;
-    typedef basic_environment<char> environment;
+#if SUNSHINE_BOOST_PROCESS_V1_NESTED
+    namespace v1 {
+#else
+    {
+#endif
+      class child;
+      class group;
+      template <typename Char>
+      class basic_environment;
+      typedef basic_environment<char> environment;
+    }  // namespace v1 (or process)
   }  // namespace process
 }  // namespace boost
 namespace video {
@@ -382,8 +400,8 @@ namespace platf {
   std::vector<std::string>
   display_names(mem_type_e hwdevice_type);
 
-  boost::process::child
-  run_command(bool elevated, bool interactive, const std::string &cmd, boost::filesystem::path &working_dir, boost::process::environment &env, FILE *file, std::error_code &ec, boost::process::group *group);
+  SUNSHINE_BOOST_PROCESS::child
+  run_command(bool elevated, bool interactive, const std::string &cmd, boost::filesystem::path &working_dir, SUNSHINE_BOOST_PROCESS::environment &env, FILE *file, std::error_code &ec, SUNSHINE_BOOST_PROCESS::group *group);
 
   enum class thread_priority_e : int {
     low,

@@ -54,7 +54,7 @@ namespace rtsp_stream {
 
   class socket_t: public std::enable_shared_from_this<socket_t> {
   public:
-    socket_t(boost::asio::io_service &ios, std::function<void(tcp::socket &sock, msg_t &&)> &&handle_data_fn):
+    socket_t(boost::asio::io_context &ios, std::function<void(tcp::socket &sock, msg_t &&)> &&handle_data_fn):
         handle_data_fn { std::move(handle_data_fn) }, sock { ios } {}
 
     void
@@ -387,7 +387,7 @@ namespace rtsp_stream {
     std::chrono::steady_clock::time_point raised_timeout;
     int _slot_count;
 
-    boost::asio::io_service ios;
+    boost::asio::io_context ios;
     tcp::acceptor acceptor { ios };
 
     std::shared_ptr<socket_t> next_socket;
